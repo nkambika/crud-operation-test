@@ -24,6 +24,6 @@ public class CommonEntity {
 
     private String createdBy;
     private String updatedBy;
-    private boolean status;
+    private boolean status = true;
 
 }

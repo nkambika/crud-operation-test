@@ -8,6 +8,7 @@ import com.crud.test.repositories.UserRepository;
 import com.crud.test.utils.UserUtility;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -31,12 +32,12 @@ public class UserService implements CommonService<UserRequestDto, Long> {
     }
 
     @Override
-    public ResponseEntity<?> update(UserRequestDto requestDto, Long id) {
+    public ResponseEntity<?> update(UserRequestDto userRequestDto, Long id) {
         try{
-            User user = UserUtility.convertUserRequestDtoToUser(requestDto);
-            user.setId(id);
+            User user = userRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("User with id: "+id+" is not found!!!"));
+            BeanUtils.copyProperties(userRequestDto, user);
             userRepository.save(user);
-            return ResponseEntity.status(HttpStatus.CREATED).body("New user created successfully!!!");
+            return ResponseEntity.status(HttpStatus.OK).body("User with id: "+id+" updated successfully!!!");
         }catch (Exception e){
             log.error("Error occurred while creating new user ",e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
