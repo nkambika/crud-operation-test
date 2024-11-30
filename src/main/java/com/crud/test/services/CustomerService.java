@@ -18,66 +18,57 @@ import java.util.List;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class CustomerService implements CommonService<CustomerRequestDto, Long>{
+public class CustomerService implements CommonService<CustomerRequestDto, Long> {
     private final CustomerRepository customerRepository;
+
     @Override
     public ResponseEntity<?> create(CustomerRequestDto customerRequestDto) {
-        try{
+        try {
             Customer customer = CustomerUtility.convertCustomerRequestDtoToCustomer(customerRequestDto);
             customerRepository.save(customer);
             return ResponseEntity.status(HttpStatus.CREATED).body("New customer created successfully!!!");
-        }catch (Exception e){
-            log.error("Error occurred while creating new customer ",e);
+        } catch (Exception e) {
+            log.error("Error occurred while creating new customer ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
     @Override
     public ResponseEntity<?> update(CustomerRequestDto customerRequestDto, Long id) {
-        try{
-            Customer customer = customerRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Customer with id: "+id+" is not found!!!"));
+        try {
+            Customer customer = customerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Customer with id: " + id + " is not found!!!"));
             BeanUtils.copyProperties(customerRequestDto, customer);
             customer.setId(id);
             customerRepository.save(customer);
-            return ResponseEntity.status(HttpStatus.OK).body("customer with id: "+id+" updated successfully!!!");
-        }catch (Exception e){
-            log.error("Error occurred while updating existing customer ",e);
+            return ResponseEntity.status(HttpStatus.OK).body("customer with id: " + id + " updated successfully!!!");
+        } catch (Exception e) {
+            log.error("Error occurred while updating existing customer ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
     @Override
     public ResponseEntity<?> delete(Long id) {
-        try{
-            Customer customer = customerRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Customer with id: "+id+" is not found!!!"));
-            customer.setStatus(false);
-            customerRepository.save(customer);
-            return ResponseEntity.status(HttpStatus.OK).body("customer with id: "+id+" deleted successfully!!!");
-        }catch(Exception e){
-            log.error("Error occurred while deleting existing customer ",e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+        Customer customer = customerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Customer with id: " + id + " is not found!!!"));
+        customer.setStatus(false);
+        customerRepository.save(customer);
+        return ResponseEntity.status(HttpStatus.OK).body("customer with id: " + id + " deleted successfully!!!");
     }
 
     @Override
     public ResponseEntity<?> get(Long id) {
-       try {
-           Customer customer = customerRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Customer with id: "+id+" is not found!!!"));
-           return ResponseEntity.status(HttpStatus.OK).body(CustomerUtility.convertCustomerToCustomerResponseDto(customer));
-       }catch (Exception e){
-           log.error("Error occurred while fetching existing customer ",e);
-           return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-       }
+        Customer customer = customerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Customer with id: " + id + " is not found!!!"));
+        return ResponseEntity.status(HttpStatus.OK).body(CustomerUtility.convertCustomerToCustomerResponseDto(customer));
     }
 
     @Override
     public ResponseEntity<?> getAll() {
-        try{
+        try {
             List<Customer> customerList = customerRepository.findAll();
             List<CustomerResponseDto> responseDtoList = customerList.stream().map(CustomerUtility::convertCustomerToCustomerResponseDto).toList();
             return ResponseEntity.status(HttpStatus.OK).body(responseDtoList);
-        }catch (Exception e){
-            log.error("Error occurred while fetching existing customers ",e);
+        } catch (Exception e) {
+            log.error("Error occurred while fetching existing customers ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
