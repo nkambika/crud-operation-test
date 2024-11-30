@@ -1,0 +1,14 @@
+Base URL: https://crud-operation-test-production.up.railway.app
+for user entity:
+    /api/user/create
+    /api/user/update/1
+    /api/user/delete/1
+    /api/user/get/1
+    /api/user/get-all
+
+for customer entity:
+    /api/customer/create
+    /api/customer/update/1
+    /api/customer/delete/1
+    /api/customer/get/1
+    /api/customer/get-all
